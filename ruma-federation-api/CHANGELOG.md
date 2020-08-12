@@ -1,5 +1,10 @@
 # [unreleased]
 
+Breaking Changes:
+
+* Wrap PduStubs in create_join_event in Raw
+* Change type of versions in create_join_event_template to String
+
 Improvements:
 
 * Add endpoints:
@@ -11,6 +16,7 @@ Improvements:
       claim_keys::v1,
       query_keys::v1,
   },
+  membership::create_join_event::v2,
   ```
 
 # 0.0.3
