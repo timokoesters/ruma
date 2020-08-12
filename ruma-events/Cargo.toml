@@ -35,3 +35,6 @@ unstable-exhaustive-types = []
 [[bench]]
 name = "event_deserialize"
 harness = false
+
+[features]
+unstable-pre-spec = []
