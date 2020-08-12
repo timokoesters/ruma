@@ -14,38 +14,6 @@ use crate::{
     Error,
 };
 
-/// The fields that are allowed to remain in an event during redaction.
-static ALLOWED_KEYS: &[&str] = &[
-    "event_id",
-    "type",
-    "room_id",
-    "sender",
-    "state_key",
-    "content",
-    "hashes",
-    "signatures",
-    "depth",
-    "prev_events",
-    "prev_state",
-    "auth_events",
-    "origin",
-    "origin_server_ts",
-    "membership",
-];
-
-/// The fields of an *m.room.power_levels* event's `content` key that are allowed to remain in an
-/// event during redaction.
-static ALLOWED_POWER_LEVELS_KEYS: &[&str] = &[
-    "ban",
-    "events",
-    "events_default",
-    "kick",
-    "redact",
-    "state_default",
-    "users",
-    "users_default",
-];
-
 /// The fields to remove from a JSON object when converting JSON into the "canonical" form.
 static CANONICAL_JSON_FIELDS_TO_REMOVE: &[&str] = &["signatures", "unsigned"];
 
@@ -688,13 +656,15 @@ fn canonical_json_with_fields_to_remove(value: &Value, fields: &[&str]) -> Resul
 /// * `value` contains a field called `signatures` that is not a JSON object.
 /// * `value` is missing the `type` field or the field is not a JSON string.
 pub fn redact(value: &Value) -> Result<Value, Error> {
+    let mut value = value.clone();
+
     if !value.is_object() {
         return Err(Error::new("JSON value must be a JSON object"));
     }
 
-    let mut owned_value = value.clone();
+    let event = value.as_object_mut().expect("safe since we checked above");
 
-    let event = owned_value.as_object_mut().expect("safe since we checked above");
+    event.remove("unsigned");
 
     let event_type_value = match event.get("type") {
         Some(event_type_value) => event_type_value,
@@ -706,34 +676,43 @@ pub fn redact(value: &Value) -> Result<Value, Error> {
         None => return Err(Error::new("field `type` in JSON value must be a JSON string")),
     };
 
+    let mut new_content = serde_json::Map::new();
+
     if let Some(content_value) = event.get_mut("content") {
-        let map = match content_value {
+        let old_content = match content_value {
             Value::Object(ref mut map) => map,
             _ => return Err(Error::new("field `content` in JSON value must be a JSON object")),
         };
 
-        for key in map.clone().keys() {
-            match event_type.as_ref() {
-                "m.room.member" if key != "membership" => map.remove(key),
-                "m.room.create" if key != "creator" => map.remove(key),
-                "m.room.join_rules" if key != "join_rules" => map.remove(key),
-                "m.room.power_levels" if !ALLOWED_POWER_LEVELS_KEYS.contains(&key.as_ref()) => {
-                    map.remove(key)
-                }
-                "m.room.aliases" if key != "aliases" => map.remove(key),
-                "m.room.history_visibility" if key != "history_visibility" => map.remove(key),
-                _ => map.remove(key),
-            };
+
+        let allowed: &[&str] = match &*event_type {
+            "m.room.member" => &["membership"],
+            "m.room.create" => &["creator"],
+            "m.room.join_rules" => &["join_rule"],
+            "m.room.power_levels" => &[
+                "ban",
+                "events",
+                "events_default",
+                "kick",
+                "redact",
+                "state_default",
+                "users",
+                "users_default",
+            ],
+            "m.room.history_visibility" => &["history_visibility"],
+            _ => &[],
+        };
+
+        for key in allowed {
+            if let Some(value) = old_content.remove(*key) {
+                new_content.insert((*key).to_owned(), value);
+            }
         }
     }
 
-    for key in event.clone().keys() {
-        if !ALLOWED_KEYS.contains(&key.as_ref()) {
-            event.remove(key);
-        }
-    }
+    event.insert("content".to_owned(), new_content.into());
 
-    Ok(owned_value)
+    Ok(value)
 }
 
 #[cfg(test)]
