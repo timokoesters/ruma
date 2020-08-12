@@ -32,3 +32,6 @@ trybuild = "1.0.31"
 [[bench]]
 name = "event_deserialize"
 harness = false
+
+[features]
+unstable-pre-spec = []

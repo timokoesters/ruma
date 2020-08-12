@@ -59,6 +59,7 @@ impl<'de> Visitor<'de> for RoomStateVisitor {
     }
 }
 
+#[cfg(not(feature = "unstable-pre-spec"))]
 #[cfg(test)]
 mod tests {
     use matches::assert_matches;
@@ -142,7 +143,6 @@ mod tests {
             RoomState { origin, auth_chain, state }
             if origin == ""
               && auth_chain.is_empty()
-              && state.is_empty()
         );
     }
 }
