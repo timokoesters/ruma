@@ -8,6 +8,7 @@ Bug fixes:
 
 Breaking changes:
 
+* Switch from `AnyEvent` to `AnyRoomEvent` in `r0::search::search_events`
 * Borrow strings in outgoing requests and responses.
   * Explicit types may have to be updated from `endpoint::Request` to `endpoint::Request<'_>` on
     clients and `endpoint::IncomingRequest` on servers, the other way around for responses.
