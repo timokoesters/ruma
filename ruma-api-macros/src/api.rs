@@ -353,7 +353,8 @@ impl ToTokens for Api {
                             #request_query_string,
                         ));
 
-                    #( #header_kvs )*
+                        .header(#ruma_api_import::exports::http::header::CONTENT_TYPE, "application/json")
+                        #( #header_kvs )*
 
                     let http_request = req_builder.body(#request_body)?;
 
