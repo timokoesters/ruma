@@ -349,6 +349,7 @@ impl ToTokens for Api {
                             #request_path_string,
                             #request_query_string,
                         ))
+                        .header(#ruma_api_import::exports::http::header::CONTENT_TYPE, "application/json")
                         #( .header(#header_kvs) )*
                         .body(#request_body)?;
 
