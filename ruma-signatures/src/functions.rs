@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use base64::{decode_config, encode_config, STANDARD_NO_PAD};
+use base64::{decode_config, encode_config, STANDARD_NO_PAD, URL_SAFE_NO_PAD};
 use ring::digest::{digest, SHA256};
 use serde_json::{from_str, from_value, map::Map, to_string, to_value, Value};
 
@@ -335,7 +335,7 @@ pub fn reference_hash(value: &Value) -> Result<String, Error> {
 
     let hash = digest(&SHA256, json.as_bytes());
 
-    Ok(encode_config(&hash, STANDARD_NO_PAD))
+    Ok(encode_config(&hash, URL_SAFE_NO_PAD))
 }
 
 /// Hashes and signs the JSON representation of an event and adds the hash and signature to objects

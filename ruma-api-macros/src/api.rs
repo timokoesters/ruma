@@ -351,10 +351,10 @@ impl ToTokens for Api {
                             base_url.strip_suffix("/").unwrap_or(base_url),
                             #request_path_string,
                             #request_query_string,
-                        ));
+                        ))
+                        .header(#ruma_api_import::exports::http::header::CONTENT_TYPE, "application/json");
 
-                        .header(#ruma_api_import::exports::http::header::CONTENT_TYPE, "application/json")
-                        #( #header_kvs )*
+                    #( #header_kvs )*
 
                     let http_request = req_builder.body(#request_body)?;
 

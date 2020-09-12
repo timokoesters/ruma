@@ -15,7 +15,7 @@ ruma_api! {
         method: PUT,
         path: "/_matrix/federation/v1/send/:transaction_id",
         rate_limited: false,
-        requires_authentication: true,
+        requires_authentication: false,
     }
 
     #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]

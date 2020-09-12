@@ -31,7 +31,7 @@ pub struct DeviceKeys<'a> {
 
     /// Additional data added to the device key information by intermediate servers, and
     /// not covered by the signatures.
-    #[serde(skip_serializing_if = "ruma_serde::is_empty")]
+    #[serde(default, skip_serializing_if = "ruma_serde::is_empty")]
     pub unsigned: UnsignedDeviceInfo<'a>,
 }
 
@@ -52,7 +52,7 @@ impl<'a> DeviceKeys<'a> {
 /// Additional data added to device key information by intermediate servers.
 #[derive(Clone, Debug, Default, Outgoing, Serialize)]
 #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
-#[incoming_derive(Clone, Serialize)]
+#[incoming_derive(Default, Clone, Serialize)]
 pub struct UnsignedDeviceInfo<'a> {
     /// The display name which the user set on the device.
     #[serde(skip_serializing_if = "Option::is_none")]
