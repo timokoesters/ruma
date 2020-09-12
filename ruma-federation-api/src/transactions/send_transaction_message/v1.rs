@@ -35,12 +35,13 @@ ruma_api! {
         /// List of persistent updates to rooms.
         ///
         /// Must not be more than 50 items.
+        #[serde(default, skip_serializing_if = "<[_]>::is_empty")]
         pub pdus: &'a [Pdu],
 
         /// List of ephemeral messages.
         ///
         /// Must not be more than 100 items.
-        #[serde(skip_serializing_if = "<[_]>::is_empty")]
+        #[serde(default, skip_serializing_if = "<[_]>::is_empty")]
         pub edus: &'a [Edu],
     }
 
