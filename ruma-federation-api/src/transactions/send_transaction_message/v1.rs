@@ -3,7 +3,8 @@
 use std::{collections::BTreeMap, time::SystemTime};
 
 use ruma_api::ruma_api;
-use ruma_events::pdu::Pdu;
+use ruma_common::Raw;
+use ruma_events::pdu::PduStub;
 use ruma_identifiers::{EventId, ServerName};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
@@ -36,7 +37,7 @@ ruma_api! {
         ///
         /// Must not be more than 50 items.
         #[serde(default, skip_serializing_if = "<[_]>::is_empty")]
-        pub pdus: &'a [Pdu],
+        pub pdus: &'a [Raw<PduStub>],
 
         /// List of ephemeral messages.
         ///
