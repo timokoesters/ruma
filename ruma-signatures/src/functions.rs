@@ -309,7 +309,7 @@ pub fn content_hash(value: &Value) -> Result<String, Error> {
 
     let hash = digest(&SHA256, json.as_bytes());
 
-    Ok(encode_config(&hash, STANDARD_NO_PAD))
+    Ok(encode_config(&hash, URL_SAFE_NO_PAD))
 }
 
 /// Creates a *reference hash* for the JSON representation of an event.
