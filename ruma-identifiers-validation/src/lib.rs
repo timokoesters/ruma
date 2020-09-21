@@ -46,9 +46,6 @@ fn parse_id(id: &str, valid_sigils: &[char]) -> Result<NonZeroU8, Error> {
     validate_id(id, valid_sigils)?;
 
     let colon_idx = id.find(':').ok_or(Error::MissingDelimiter)?;
-    if colon_idx < 2 {
-        return Err(Error::InvalidLocalPart);
-    }
 
     server_name::validate(&id[colon_idx + 1..])?;
 
