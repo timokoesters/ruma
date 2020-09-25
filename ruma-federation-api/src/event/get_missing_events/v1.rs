@@ -2,8 +2,9 @@
 
 use js_int::{uint, UInt};
 use ruma_api::ruma_api;
-use ruma_events::pdu::Pdu;
+use ruma_events::pdu::PduStub;
 use ruma_identifiers::{EventId, RoomId};
+use ruma_common::Raw;
 
 ruma_api! {
     metadata: {
@@ -12,7 +13,7 @@ ruma_api! {
         name: "get_missing_events",
         path: "/_matrix/federation/v1/get_missing_events/:room_id",
         rate_limited: false,
-        requires_authentication: true,
+        requires_authentication: false,
     }
 
     #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
@@ -40,7 +41,7 @@ ruma_api! {
     #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
     response: {
         /// The missing PDUs.
-        pub events: Vec<Pdu>
+        pub events: Vec<Raw<PduStub>>
     }
 }
 
@@ -63,7 +64,7 @@ impl<'a> Request<'a> {
 
 impl Response {
     /// Creates a new `Response` with the given events.
-    pub fn new(events: Vec<Pdu>) -> Self {
+    pub fn new(events: Vec<Raw<PduStub>>) -> Self {
         Self { events }
     }
 }
