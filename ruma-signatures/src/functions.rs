@@ -246,7 +246,9 @@ pub fn verify_json(
     public_key_map: &PublicKeyMap,
     object: &CanonicalJsonObject,
 ) -> Result<(), Error> {
-    let signature_map = match object.get("signatures") {
+    let mut object = object.clone();
+
+    let signature_map = match object.remove("signatures") {
         Some(CanonicalJsonValue::Object(signatures)) => signatures.clone(),
         Some(_) => return Err(Error::new("field `signatures` must be a JSON object")),
         None => return Err(Error::new("JSON object must contain a `signatures` field")),
@@ -282,7 +284,7 @@ pub fn verify_json(
 
             let public_key_bytes = decode_config(&public_key, STANDARD_NO_PAD)?;
 
-            verify_json_with(&Ed25519Verifier, &public_key_bytes, &signature_bytes, object)?;
+            verify_json_with(&Ed25519Verifier, &public_key_bytes, &signature_bytes, &object)?;
         }
     }
 
